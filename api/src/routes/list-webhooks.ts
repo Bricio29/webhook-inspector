@@ -1,5 +1,5 @@
-import { db } from '@/db'
-import { webhooks } from '@/db/schema'
+import { db } from '../db'
+import { webhooks } from '../db/schema'
 import { desc } from 'drizzle-orm'
 import { lt } from 'drizzle-orm'
 import { createSelectSchema } from 'drizzle-zod'
