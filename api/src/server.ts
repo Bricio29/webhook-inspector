@@ -21,9 +21,9 @@ app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)
 
 app.register(fastifyCors, {
-  origin: true,
+  origin: '*', // Permite qualquer origem, útil para ferramentas de inspeção
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  // credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 })
 
 app.register(fastifySwagger, {
@@ -41,11 +41,11 @@ app.register(ScalarApiReference, {
   routePrefix: '/docs',
 })
 
-app.register(listWebhooks)
-app.register(getWebhook)
-app.register(deleteWebhook)
+app.register(listWebhooks, { prefix: '/api' })
+app.register(getWebhook, { prefix: '/api' })
+app.register(deleteWebhook, { prefix: '/api' })
+app.register(generateHandler, { prefix: '/api' })
 app.register(captureWebhook)
-app.register(generateHandler)
 
 app.listen({ port: env.PORT, host: '0.0.0.0' }).then(() => {
   console.log('🔥 HTTP server running on http://localhost:3333!')
