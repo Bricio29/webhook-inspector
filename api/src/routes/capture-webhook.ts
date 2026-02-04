@@ -32,10 +32,11 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
           : JSON.stringify(request.body, null, 2)
       }
 
-      // Correção: Removemos o 'new URL()' que causava o erro no Render
-      // Pegamos no request.url (ex: /capture/teste?abc=1) e limpamos
-      const urlWithoutQuery = request.url.split('?')[0]
-      const pathname = urlWithoutQuery.replace('/capture', '')
+      // SOLUÇÃO: Tratamos a URL como uma string simples para evitar o erro ERR_INVALID_URL
+      // Pegamos o caminho completo e removemos os parâmetros de busca (query params)
+      const urlPath = request.url.split('?')[0]
+      // Removemos o prefixo '/capture' para salvar apenas o sub-caminho desejado
+      const pathname = urlPath.replace('/capture', '')
 
       const headers = Object.fromEntries(
         Object.entries(request.headers).map(([key, value]) => [
