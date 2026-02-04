@@ -10,10 +10,16 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "nodenext", // Alinhado com o module
+    
+    "outDir": "./dist",    // Onde os arquivos .js vão morar
+    "rootDir": "./src",    // Onde estão seus fontes .ts
+    "baseUrl": ".",        // Necessário para os paths funcionarem
 
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": ["src/**/*"], // Diz ao TS para compilar tudo dentro de src
+  "exclude": ["node_modules", "dist"]
 }
