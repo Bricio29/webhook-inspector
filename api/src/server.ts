@@ -21,9 +21,8 @@ app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)
 
 app.register(fastifyCors, {
-  origin: '*', // Permite qualquer origem, útil para ferramentas de inspeção
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 })
 
 app.register(fastifySwagger, {
