@@ -17,7 +17,6 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      // 1. Extração de metadados da requisição
       const method = request.method
       const ip = request.ip
       const contentType = request.headers['content-type']
@@ -25,7 +24,6 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
         ? Number(request.headers['content-length'])
         : null
 
-      // 2. Tratamento do corpo (Body)
       let body: string | null = null
       if (request.body) {
         body = typeof request.body === 'string'
@@ -33,13 +31,12 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
           : JSON.stringify(request.body, null, 2)
       }
 
-      // 3. CORREÇÃO CRÍTICA: Tratamento de URL para evitar ERR_INVALID_URL
-      // Usamos uma base fictícia para que o Node consiga processar o caminho relativo
+      // SOLUÇÃO DEFINITIVA PARA ERR_INVALID_URL:
+      // Usamos o segundo parâmetro do new URL para fornecer uma base fictícia.
+      // Isso permite que o Node processe o caminho relativo sem dar erro.
       const urlObj = new URL(request.url, 'http://localhost')
       const pathname = urlObj.pathname.replace('/capture', '') || '/'
       
-      // 4. Captura de Query Params e Headers
-      const queryParams = request.query // Objeto com os parâmetros da URL (?id=123)
       const headers = Object.fromEntries(
         Object.entries(request.headers).map(([key, value]) => [
           key,
@@ -47,8 +44,6 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
         ])
       )
 
-      // 5. Inserção no Banco de Dados (Neon)
-      // Nota: statusCode tem default 200 no teu banco, então não é obrigatório enviar
       const result = await db
         .insert(webhooks)
         .values({
@@ -59,13 +54,10 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
           body,
           contentType,
           contentLength,
-          // Se o teu schema do Drizzle já tiver estes campos, podes descomentar:
-          // queryParams, 
-          // statusCode: 200,
+          // statusCode: 200, // O banco já tem default 200
         })
         .returning()
 
-      // 6. Resposta de sucesso
       return reply.code(201).send({ id: result[0].id })
     },
   )
