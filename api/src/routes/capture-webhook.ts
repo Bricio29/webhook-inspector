@@ -24,7 +24,6 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
         ? Number(request.headers['content-length'])
         : null
 
-
       let body: string | null = null
 
       if (request.body) {
@@ -33,7 +32,10 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
           : JSON.stringify(request.body, null, 2)
       }
 
-      const pathname = request.url.replace('/capture', '')
+      // Correção: Removemos o 'new URL()' que causava o erro no Render
+      // Pegamos no request.url (ex: /capture/teste?abc=1) e limpamos
+      const urlWithoutQuery = request.url.split('?')[0]
+      const pathname = urlWithoutQuery.replace('/capture', '')
 
       const headers = Object.fromEntries(
         Object.entries(request.headers).map(([key, value]) => [
@@ -55,7 +57,7 @@ export const captureWebhook: FastifyPluginAsyncZod = async (app) => {
         })
         .returning()
 
-      return reply.send({ id: result[0].id })
+      return reply.code(201).send({ id: result[0].id })
     },
   )
 }
